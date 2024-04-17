@@ -6,13 +6,15 @@ import Feedback from "./Feedback/Feedback";
 import Notification from "./Notification/Notification";
 
 export default function App() {
-  const [values, setValues] = useState(() => {
-    const storedValues = JSON.parse(localStorage.getItem("feedback"));
-    return storedValues !== null ? storedValues : {
+  const initialValues = {
     good: 0,
     neutral: 0,
-    bad: 0
-}});
+    bad: 0,
+  };
+
+  const [values, setValues] = useState(() => {
+    const storedValues = JSON.parse(localStorage.getItem("feedback"));
+    return storedValues !== null ? storedValues : initialValues});
 
   useEffect(() => {
     localStorage.setItem('feedback', JSON.stringify(values));
@@ -26,16 +28,10 @@ export default function App() {
   }
 
   const resetFeedback = ()=> {
-    const initialValues = {
-      good: 0,
-      neutral: 0,
-      bad: 0,
-    };
     setValues(initialValues);
     localStorage.setItem('feedback', JSON.stringify(initialValues));
     }
   
-
   const total = values.good + values.neutral + values.bad;
   const positiveFeedback = total > 0 ? Math.round((values.good / total) * 100) : 0;
 
@@ -43,7 +39,7 @@ export default function App() {
     <div>
       <Description />
       <Options onUpdate={updateFeedback} total={total} onReset={resetFeedback}/>
-      {total === 0 ? <Notification/> : <Feedback good={values.good} neutral={values.neutral} bad={values.bad} total={total} positive={positiveFeedback}/>}
+      {total === 0 ? <Notification/> : <Feedback data={values} total={total} positive={positiveFeedback}/>}
     </div>
   );
 }
